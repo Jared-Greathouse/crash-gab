@@ -1,0 +1,16 @@
+# environments
+.env
+
+# dependencies
+node_modules
+
+# python
+__pycache__
+*.pyc
+
+# docker
+*.log
+
+# frontend
+*.log
+*.log.*

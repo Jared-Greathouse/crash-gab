@@ -1,4 +1,4 @@
-FROM python:3.12-bookworm as base
+FROM python:3.12-bookworm AS base
 
 # Create non-root user
 # RUN useradd -m -u 1000 appuser
@@ -16,6 +16,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Setup app
 WORKDIR /app
 # USER appuser
+
+# Set Python path
+ENV PYTHONPATH=/app
 
 # Configurable settings
 ENV MODULE_NAME=app.main

@@ -45,7 +45,7 @@ services:
 
   frontend:
     build: 
-      context: ./frontend/crash-gab
+      context: ./frontend
       dockerfile: Dockerfile
     # restart: always
     ports:
@@ -55,5 +55,5 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./frontend/crash-gab:/app
+      - ./frontend:/app
 

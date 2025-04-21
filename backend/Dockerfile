@@ -1,4 +1,4 @@
-FROM python:3.12-bookworm as base
+FROM python:3.12-bookworm AS base
 
 WORKDIR /app
 

@@ -6,7 +6,12 @@ import os
 from fastapi import FastAPI
 from app.api.chatroom_api import router as chatroom_router
 # from app import logging_config  # This will initialize logging
-# import logging
+import logging
+from datetime import datetime, timezone
+import psutil
+
+# Initialize logging
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -14,10 +19,30 @@ app.include_router(chatroom_router)
 
 @app.get("/")
 def read_root():
-    logger = logging.getLogger(__name__)
     logger.info("Root endpoint accessed")
     return {"message": "Hello, World!"}
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    """Enhanced health check endpoint that includes system metrics"""
+    try:
+        # Get system metrics
+        cpu_percent = psutil.cpu_percent()
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        
+        health_data = {
+            "status": "healthy",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "system": {
+                "cpu_percent": cpu_percent,
+                "memory_percent": memory.percent,
+                "disk_percent": disk.percent
+            }
+        }
+        
+        logger.info("Health check completed successfully", extra={"health_data": health_data})
+        return health_data
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}", exc_info=True)
+        return {"status": "unhealthy", "error": str(e)}

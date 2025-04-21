@@ -10,10 +10,12 @@ import logging
 from datetime import datetime, timezone
 import psutil
 
-# Initialize logging
+from app.middleware.timer import TimingMiddleware
+
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+app.add_middleware(TimingMiddleware)
 
 app.include_router(chatroom_router)
 

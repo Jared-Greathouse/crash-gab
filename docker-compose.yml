@@ -35,7 +35,7 @@ services:
       - "8000:8000"
     environment:
       - MONGODB_URI=mongodb://root:example@mongodb:27017/
-      - DATABASE_NAME=mongodb_data
+      - DATABASE_NAME=crash-gab
       - WAIT_HOSTS=mongodb:27017
       - CORS_HOST=http://localhost:3000
     depends_on:

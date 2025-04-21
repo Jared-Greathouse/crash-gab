@@ -4,9 +4,12 @@ from app.models.chatroom_models import ChatroomInDB
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 # collection = db["chatrooms"]
+def serialize_chatroom(chatroom: dict) -> dict:
+    chatroom["_id"] = str(chatroom["_id"])
+    return chatroom
 
 async def get_all_chatrooms(db: AsyncIOMotorDatabase):
-    return [room async for room in db["chatrooms"].find()]
+    return [serialize_chatroom(room) async for room in db["chatrooms"].find()]
 
 # chatrooms = [
 #     {"id": 1, "name": "General", "description": "Talk about anything"},
@@ -15,3 +18,4 @@ async def get_all_chatrooms(db: AsyncIOMotorDatabase):
 
 # def get_all_chatrooms():
 #     return chatrooms
+

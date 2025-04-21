@@ -1,4 +1,5 @@
 from app.services import chatroom_service
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
-def list_chatrooms():
-    return chatroom_service.get_all_chatrooms()
+async def list_chatrooms(db: AsyncIOMotorDatabase):
+    return await chatroom_service.get_all_chatrooms(db)

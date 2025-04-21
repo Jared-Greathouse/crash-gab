@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, UTC
 from bson import ObjectId
@@ -17,7 +17,7 @@ class Chatroom(BaseModel):
 
 
 class ChatroomInDB(Chatroom):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     _id: ObjectId
     active: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

@@ -3,19 +3,14 @@
 from app.models.chatroom_models import ChatroomInDB
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-# collection = db["chatrooms"]
 def serialize_chatroom(chatroom: dict) -> dict:
     chatroom["_id"] = str(chatroom["_id"])
     return chatroom
 
 async def get_all_chatrooms(db: AsyncIOMotorDatabase):
-    return [serialize_chatroom(room) async for room in db["chatrooms"].find()]
+    try:
+        return [serialize_chatroom(room) async for room in db["chatrooms"].find()]
+    except Exception as e:
+        raise RuntimeError("Database error") from e
 
-# chatrooms = [
-#     {"id": 1, "name": "General", "description": "Talk about anything"},
-#     {"id": 2, "name": "Tech", "description": "Discuss tech topics"}
-# ]
-
-# def get_all_chatrooms():
-#     return chatrooms
 

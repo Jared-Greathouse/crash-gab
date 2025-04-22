@@ -38,3 +38,20 @@ async def get_chatroom_by_id(db: AsyncIOMotorDatabase, chatroom_id: str):
     except Exception as e:
         logger.error(f"DB error: {e}")
         raise RuntimeError("Database error") from e
+
+async def create_chatroom(db: AsyncIOMotorDatabase, chatroom_data: ChatroomInDB):
+    try:
+        logger.debug(f"Attempting to create chatroom: {chatroom_data}")
+        # Convert the model to a dict for insertion
+        chatroom_dict = chatroom_data.model_dump()
+        result = await db["chatrooms"].insert_one(chatroom_dict)
+        # Create the response document with the inserted ID
+        created_chatroom = {
+            **chatroom_dict,
+            "_id": result.inserted_id
+        }
+        logger.debug(f"Chatroom created with ID: {result.inserted_id}")
+        return serialize_chatroom(created_chatroom)
+    except Exception as e:
+        logger.error(f"DB error during Chatroom creation: {e}")
+        raise RuntimeError("Database error") from e

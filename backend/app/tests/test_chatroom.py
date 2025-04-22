@@ -90,3 +90,60 @@ async def test_get_chatroom_by_id_invalid_id():
     invalid_id = "invalid_id"
     with pytest.raises(ValueError, match="Invalid ObjectId format"):
         await chatroom_controller.get_chatroom_by_id(mock_db, invalid_id)
+
+# @pytest.mark.asyncio
+# async def test_create_chatroom_success():
+#     mock_db = AsyncMock()
+#     chatroom_data = ChatroomInDB(name="Dev", messages=[], members=[])
+#     mock_db["chatrooms"].insert_one.return_value.inserted_id = ObjectId("64b3c1f930f1a8a012345678")
+
+#     result = await chatroom_controller.create_chatroom(mock_db, chatroom_data)
+#     assert result is not None
+
+@pytest.mark.asyncio
+async def test_create_chatroom_success():
+    # Create the base mock
+    mock_db = MagicMock()
+    
+    # Create an AsyncMock for insert_one
+    mock_insert_one = AsyncMock()
+    inserted_id = ObjectId("507f1f77bcf86cd799439011")
+    mock_insert_one.return_value = AsyncMock(inserted_id=inserted_id)
+    
+    # Set up the dictionary-style access to return a mock with the async insert_one
+    mock_collection = MagicMock()
+    mock_collection.insert_one = mock_insert_one
+    mock_db.__getitem__.return_value = mock_collection
+    
+    # Create test data
+    chatroom_data = ChatroomInDB(
+        name="New Chatroom",
+        messages=[],
+        members=[],
+        _id=inserted_id,  # Required by the model
+        active=True
+    )
+    
+    result = await chatroom_controller.create_chatroom(mock_db, chatroom_data)
+    
+    # Verify the result
+    assert isinstance(result, dict)
+    assert result["_id"] == str(inserted_id)
+    
+    # Verify insert_one was called with the correct data
+    mock_insert_one.assert_called_once()
+    call_args = mock_insert_one.call_args[0][0]
+    assert call_args["name"] == "New Chatroom"
+    assert call_args["messages"] == []
+    assert call_args["members"] == []
+    assert call_args["active"] is True
+    assert "_id" not in call_args
+
+@pytest.mark.asyncio
+async def test_create_chatroom_db_error():
+    mock_db = AsyncMock()
+    chatroom_data = ChatroomInDB(name="FailRoom", messages=[], members=[])
+    mock_db["chatrooms"].insert_one.side_effect = Exception("Insert failed")
+
+    with pytest.raises(RuntimeError, match="Controller failed to create chatroom"):
+        await chatroom_controller.create_chatroom(mock_db, chatroom_data)

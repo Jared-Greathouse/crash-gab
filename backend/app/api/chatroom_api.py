@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.controllers import chatroom_controller
 from app.database.mongodb import get_database
 from motor.motor_asyncio import AsyncIOMotorDatabase
-
+from app.models.chatroom_models import ChatroomInDB
 router = APIRouter(prefix="/chatrooms", tags=["Chatrooms"])
 
 @router.get("/")
@@ -20,5 +20,15 @@ async def get_chatroom(chatroom_id: str, db: AsyncIOMotorDatabase = Depends(get_
         return await chatroom_controller.get_chatroom_by_id(db, chatroom_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.post("/", status_code=201)
+async def create_chatroom(chatroom_data: ChatroomInDB, db: AsyncIOMotorDatabase = Depends(get_database)):
+    try:
+        chatroom_id = await chatroom_controller.create_chatroom(db, chatroom_data)
+        return {"chatroom_id": chatroom_id}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail="Internal server error")

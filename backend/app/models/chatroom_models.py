@@ -17,7 +17,6 @@ class Chatroom(BaseModel):
 
 
 class ChatroomInDB(Chatroom):
-
     _id: ObjectId
     active: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

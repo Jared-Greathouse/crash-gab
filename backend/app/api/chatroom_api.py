@@ -13,3 +13,12 @@ async def list_all(db: AsyncIOMotorDatabase = Depends(get_database)):
         raise HTTPException(status_code=404, detail=str(e))
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.get("/{chatroom_id}")
+async def get_chatroom(chatroom_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+    try:
+        return await chatroom_controller.get_chatroom_by_id(db, chatroom_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=500, detail="Internal server error")

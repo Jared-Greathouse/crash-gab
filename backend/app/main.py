@@ -34,8 +34,6 @@ def health_check():
         disk = psutil.disk_usage('/')
         
         health_data = {
-            "status": "healthy",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
             "system": {
                 "cpu_percent": cpu_percent,
                 "memory_percent": memory.percent,
@@ -43,7 +41,7 @@ def health_check():
             }
         }
         
-        logger.info("Health check completed successfully", extra={"health_data": health_data})
+        logger.info(f"Health check completed: {health_data}")
         return health_data
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}", exc_info=True)

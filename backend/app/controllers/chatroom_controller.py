@@ -1,7 +1,7 @@
 from app.services import chatroom_service
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson.objectid import ObjectId, InvalidId
-from app.models.chatroom_models import ChatroomInDB
+from app.models.chatroom_models import ChatroomInDB, ChatroomUpdate
 import logging
 logger = logging.getLogger(__name__)
 
@@ -43,3 +43,16 @@ async def create_chatroom(db: AsyncIOMotorDatabase, chatroom_data: ChatroomInDB)
     except Exception as e:
         logger.error(f"Unexpected error in controller: {e}")
         raise RuntimeError("Controller failed to create chatroom") from e
+
+async def update_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str, chatroom_data: ChatroomUpdate):
+    try:
+        logger.debug(f"Updating chatroom in controller: {chatroom_id}")
+        result = await chatroom_service.update_chatroom(db, chatroom_id, chatroom_data)
+        logger.info(f"Controller successfully updated chatroom with ID: {chatroom_id}")
+        return result
+    except ValueError as e:
+        logger.warning(f"ValueError in controller: {e}")
+        raise e  # Pass it up to be translated to HTTP
+    except Exception as e:
+        logger.error(f"Unexpected error in controller: {e}")
+        raise RuntimeError("Controller failed to update chatroom") from e

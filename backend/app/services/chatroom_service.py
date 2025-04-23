@@ -1,6 +1,6 @@
 from app.repositories import chatroom_repository
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from app.models.chatroom_models import ChatroomInDB 
+from app.models.chatroom_models import ChatroomInDB, ChatroomUpdate
 import logging
 logger = logging.getLogger(__name__)
 
@@ -38,3 +38,17 @@ async def create_chatroom(db: AsyncIOMotorDatabase, chatroom_data: ChatroomInDB)
         logger.error(f"Error creating chatroom in service layer: {e}")
         raise e
 
+async def update_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str, chatroom_data: ChatroomUpdate):
+    logger.debug(f"Updating chatroom with ID: {chatroom_id}")
+    try:
+        result = await chatroom_repository.update_chatroom(db, chatroom_id, chatroom_data)
+        if result["matched_count"] == 0:
+            logger.warning(f"No chatroom found with ID: {chatroom_id} in service layer")
+            raise ValueError("No chatroom found")
+        if result["modified_count"] == 0:
+            logger.warning(f"No changes made to chatroom with ID: {chatroom_id} in service layer")
+            raise ValueError("No changes made")
+        return result
+    except Exception as e:
+        logger.error(f"Error updating chatroom in service layer: {e}")
+        raise e

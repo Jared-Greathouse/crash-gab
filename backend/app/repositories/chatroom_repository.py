@@ -1,6 +1,6 @@
 from bson.objectid import ObjectId, InvalidId
 # from app.database.mongodb import db
-from app.models.chatroom_models import ChatroomInDB
+from app.models.chatroom_models import ChatroomInDB, ChatroomUpdate
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 import logging
@@ -54,4 +54,22 @@ async def create_chatroom(db: AsyncIOMotorDatabase, chatroom_data: ChatroomInDB)
         return serialize_chatroom(created_chatroom)
     except Exception as e:
         logger.error(f"DB error during Chatroom creation: {e}")
+        raise RuntimeError("Database error") from e
+
+async def update_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str, chatroom_data: ChatroomUpdate):
+    try:
+        logger.debug(f"Attempting to update chatroom with ID: {chatroom_id}")
+        object_id = ObjectId(chatroom_id)
+        result = await db["chatrooms"].update_one(
+            {"_id": object_id}, 
+            {"$set": chatroom_data.model_dump(exclude_unset=True)}
+        )
+        if result.modified_count == 0:
+            logger.warning(f"No chatroom found with ID: {chatroom_id}")
+            raise ValueError(f"No chatroom found")
+        return {"matched_count": result.matched_count, "modified_count": result.modified_count}
+    except ValueError as e:
+        raise e
+    except Exception as e:
+        logger.error(f"DB error during Chatroom update: {e}")
         raise RuntimeError("Database error") from e

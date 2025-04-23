@@ -229,3 +229,35 @@ async def test_update_chatroom_not_found():
         {"_id": ObjectId(chatroom_id)},
         {"$set": update_data.model_dump(exclude_unset=True)}
     )
+
+@pytest.mark.asyncio
+async def test_delete_chatroom_success():
+    mock_db = MagicMock()
+    mock_result = AsyncMock()
+    mock_result.deleted_count = 1
+    mock_db["chatrooms"].delete_one = AsyncMock(return_value=mock_result)
+    result = await chatroom_controller.delete_chatroom(mock_db, "507f1f77bcf86cd799439011")
+    assert result["deleted_count"] == 1
+    mock_db["chatrooms"].delete_one.assert_called_once_with({"_id": ObjectId("507f1f77bcf86cd799439011")})
+
+@pytest.mark.asyncio
+async def test_delete_chatroom_not_found():
+    mock_db = MagicMock()
+    mock_result = AsyncMock()
+    mock_result.deleted_count = 0
+    mock_db["chatrooms"].delete_one = AsyncMock(return_value=mock_result)
+    with pytest.raises(ValueError, match="No chatroom found"):
+        await chatroom_controller.delete_chatroom(mock_db, "507f1f77bcf86cd799439011")
+
+@pytest.mark.asyncio
+async def test_delete_chatroom_db_error():
+    mock_db = MagicMock()
+    mock_db["chatrooms"].delete_one = AsyncMock(side_effect=Exception("Delete failed"))
+    with pytest.raises(RuntimeError, match="Service error while deleting chatroom"):
+        await chatroom_controller.delete_chatroom(mock_db, "507f1f77bcf86cd799439011")
+
+@pytest.mark.asyncio
+async def test_delete_chatroom_invalid_id():
+    mock_db = MagicMock()
+    with pytest.raises(ValueError, match="Invalid ObjectId format"):
+        await chatroom_controller.delete_chatroom(mock_db, "invalid_id")

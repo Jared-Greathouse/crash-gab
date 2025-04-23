@@ -2,12 +2,9 @@ from app.logging_config import setup_logging
 
 setup_logging()
 
-import os
 from fastapi import FastAPI
 from app.api.chatroom_api import router as chatroom_router
-# from app import logging_config  # This will initialize logging
 import logging
-from datetime import datetime, timezone
 import psutil
 
 from app.middleware.timer import TimingMiddleware

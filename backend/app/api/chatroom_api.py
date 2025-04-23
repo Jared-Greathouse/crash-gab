@@ -42,3 +42,13 @@ async def update_chatroom(chatroom_id: str, chatroom_data: ChatroomUpdate, db: A
         raise HTTPException(status_code=404, detail=str(e))
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail="Internal server error")
+    
+@router.delete("/{chatroom_id}", status_code=200)
+async def delete_chatroom(chatroom_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+    try:
+        deleted_count = await chatroom_controller.delete_chatroom(db, chatroom_id)
+        return {"deleted_count": deleted_count}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=500, detail="Internal server error")

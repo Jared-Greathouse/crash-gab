@@ -1,6 +1,7 @@
 from app.repositories import chatroom_repository
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.models.chatroom_models import ChatroomInDB, ChatroomUpdate
+from typing import Dict
 import logging
 logger = logging.getLogger(__name__)
 
@@ -52,3 +53,17 @@ async def update_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str, chatroom_d
     except Exception as e:
         logger.error(f"Error updating chatroom in service layer: {e}")
         raise e
+    
+async def delete_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str) -> Dict[str, int]:
+    logger.debug(f"Deleting chatroom with ID: {chatroom_id}")
+    try:
+        result = await chatroom_repository.delete_chatroom(db, chatroom_id)
+        if result.get("deleted_count", 0) == 0:
+            logger.warning(f"No chatroom found with ID: {chatroom_id} in service layer")
+            raise ValueError("No chatroom found")
+        return result
+    except ValueError:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting chatroom in service layer: {e}")
+        raise RuntimeError("Service error while deleting chatroom") from e

@@ -2,6 +2,7 @@ from app.services import chatroom_service
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson.objectid import ObjectId, InvalidId
 from app.models.chatroom_models import ChatroomInDB, ChatroomUpdate
+from typing import Dict
 import logging
 logger = logging.getLogger(__name__)
 
@@ -56,3 +57,16 @@ async def update_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str, chatroom_d
     except Exception as e:
         logger.error(f"Unexpected error in controller: {e}")
         raise RuntimeError("Controller failed to update chatroom") from e
+
+async def delete_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str) -> Dict[str, int]:
+    try:
+        logger.debug(f"Deleting chatroom in controller: {chatroom_id}")
+        result = await chatroom_service.delete_chatroom(db, chatroom_id)
+        logger.info(f"Controller successfully deleted chatroom with ID: {chatroom_id}")
+        return result
+    except ValueError as e:
+        logger.warning(f"ValueError in controller: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error in controller: {e}")
+        raise

@@ -2,7 +2,7 @@ from bson.objectid import ObjectId, InvalidId
 # from app.database.mongodb import db
 from app.models.chatroom_models import ChatroomInDB, ChatroomUpdate
 from motor.motor_asyncio import AsyncIOMotorDatabase
-
+from typing import Dict
 import logging
 logger = logging.getLogger(__name__)
 
@@ -72,4 +72,23 @@ async def update_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str, chatroom_d
         raise e
     except Exception as e:
         logger.error(f"DB error during Chatroom update: {e}")
+        raise RuntimeError("Database error") from e
+
+async def delete_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str) -> Dict[str, int]:
+    try:
+        logger.debug(f"Attempting to delete chatroom with ID: {chatroom_id}")
+        try:
+            object_id = ObjectId(chatroom_id)
+        except (InvalidId, TypeError) as e:
+            logger.warning(f"Invalid ObjectId format: {chatroom_id}")
+            raise ValueError(f"Invalid ObjectId format") from e
+        result = await db["chatrooms"].delete_one({"_id": object_id})
+        if result.deleted_count == 0:
+            logger.warning(f"No chatroom found with ID: {chatroom_id}")
+            raise ValueError(f"No chatroom found")
+        return {"status": "success", "deleted_count": result.deleted_count}
+    except ValueError:
+        raise
+    except Exception as e:
+        logger.error(f"DB error during Chatroom deletion: {e}")
         raise RuntimeError("Database error") from e

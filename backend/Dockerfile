@@ -3,7 +3,9 @@ FROM python:3.12-bookworm AS base
 WORKDIR /app
 
 COPY requirements.txt .
+COPY requirements-dev.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-dev.txt
 
 COPY . .
 

@@ -11,7 +11,7 @@ async def list_all(db: AsyncIOMotorDatabase = Depends(get_database)):
         return await chatroom_controller.list_chatrooms(db)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
-    except RuntimeError as e:
+    except RuntimeError:
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/{chatroom_id}")
@@ -20,7 +20,7 @@ async def get_chatroom(chatroom_id: str, db: AsyncIOMotorDatabase = Depends(get_
         return await chatroom_controller.get_chatroom_by_id(db, chatroom_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
-    except RuntimeError as e:
+    except RuntimeError:
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.post("/", status_code=201)
@@ -30,7 +30,7 @@ async def create_chatroom(chatroom_data: ChatroomInDB, db: AsyncIOMotorDatabase 
         return {"chatroom_id": chatroom_id}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    except RuntimeError as e:
+    except RuntimeError:
         raise HTTPException(status_code=500, detail="Internal server error")
     
 @router.put("/{chatroom_id}", status_code=200)
@@ -40,7 +40,7 @@ async def update_chatroom(chatroom_id: str, chatroom_data: ChatroomUpdate, db: A
         return {"modified_count": modified_count}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
-    except RuntimeError as e:
+    except RuntimeError:
         raise HTTPException(status_code=500, detail="Internal server error")
     
 @router.delete("/{chatroom_id}", status_code=200)
@@ -50,5 +50,5 @@ async def delete_chatroom(chatroom_id: str, db: AsyncIOMotorDatabase = Depends(g
         return {"deleted_count": deleted_count}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
-    except RuntimeError as e:
+    except RuntimeError:
         raise HTTPException(status_code=500, detail="Internal server error")

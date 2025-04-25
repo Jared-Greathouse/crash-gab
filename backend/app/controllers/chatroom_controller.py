@@ -1,6 +1,5 @@
 from app.services import chatroom_service
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from bson.objectid import ObjectId, InvalidId
 from app.models.chatroom_models import ChatroomInDB, ChatroomUpdate
 from typing import Dict
 import logging

@@ -1,13 +1,10 @@
 from app.logging_config import setup_logging
-
-setup_logging()
-
 from fastapi import FastAPI
 from app.api.chatroom_api import router as chatroom_router
 import logging
 import psutil
-
 from app.middleware.timer import TimingMiddleware
+setup_logging()
 
 logger = logging.getLogger(__name__)
 

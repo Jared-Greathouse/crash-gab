@@ -1,0 +1,10 @@
+# Testing framework
+pytest==8.3.0
+pytest-asyncio==0.26.0
+
+# System monitoring / debugging (optional)
+psutil==5.9.8
+
+#Linting
+ruff==0.1.1
+

@@ -66,7 +66,7 @@ async def update_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str, chatroom_d
         )
         if result.modified_count == 0:
             logger.warning(f"No chatroom found with ID: {chatroom_id}")
-            raise ValueError(f"No chatroom found")
+            raise ValueError("No chatroom found")
         return {"matched_count": result.matched_count, "modified_count": result.modified_count}
     except ValueError as e:
         raise e
@@ -81,11 +81,11 @@ async def delete_chatroom(db: AsyncIOMotorDatabase, chatroom_id: str) -> Dict[st
             object_id = ObjectId(chatroom_id)
         except (InvalidId, TypeError) as e:
             logger.warning(f"Invalid ObjectId format: {chatroom_id}")
-            raise ValueError(f"Invalid ObjectId format") from e
+            raise ValueError("Invalid ObjectId format") from e
         result = await db["chatrooms"].delete_one({"_id": object_id})
         if result.deleted_count == 0:
             logger.warning(f"No chatroom found with ID: {chatroom_id}")
-            raise ValueError(f"No chatroom found")
+            raise ValueError("No chatroom found")
         return {"status": "success", "deleted_count": result.deleted_count}
     except ValueError:
         raise

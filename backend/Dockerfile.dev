@@ -10,8 +10,10 @@ RUN chmod +x /wait
 # Install dependencies
 WORKDIR /deps
 COPY requirements.txt .
+COPY requirements-dev.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+  pip install --no-cache-dir -r requirements.txt && \
+  pip install --no-cache-dir -r requirements-dev.txt
 
 # Setup app
 WORKDIR /app

@@ -1,6 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock, create_autospec
-from app.services import chatroom_service
+from unittest.mock import AsyncMock, MagicMock
 from app.controllers import chatroom_controller
 from app.models.chatroom_models import ChatroomInDB, ChatroomUpdate
 from bson.objectid import ObjectId

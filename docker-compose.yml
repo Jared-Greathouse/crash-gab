@@ -13,7 +13,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=example
-  
+
   mongo-express:
     image: mongo-express:latest
     depends_on:
@@ -27,7 +27,7 @@ services:
     restart: always
 
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile.dev
     # restart: always
@@ -44,7 +44,7 @@ services:
       - ./backend:/app
 
   frontend:
-    build: 
+    build:
       context: ./frontend
       dockerfile: Dockerfile
     # restart: always
@@ -56,4 +56,3 @@ services:
       - backend
     volumes:
       - ./frontend:/app
-
